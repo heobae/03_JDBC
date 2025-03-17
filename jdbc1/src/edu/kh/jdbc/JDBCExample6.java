@@ -49,7 +49,7 @@ public class JDBCExample6 {
 			
 			String sql = """
 					UPDATE TB_USER
-					SET USER_NAME
+					SET USER_NAME = 
 					WHERE 
 					"""
 			

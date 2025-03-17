@@ -69,7 +69,7 @@ public class JDBCExample5 {
 					VALUES(SEQ_USER_NO.NEXTVAL, ?, ?, ?, DEFAULT )
 					""";
 			
-			// 4. PrepareStatement 객체 생성
+			// 4. PreparedStatement 객체 생성
 			// -> 객체 생성과 동시에 SQL이 담겨지게 됨
 			// -> 미리 ?(위치홀더)에 값을 받을 준비를 해야되기 때문에..
 			
