@@ -17,24 +17,28 @@ public class JDBCExample6 {
 		// 2. commit/rollback 처리하기
 		// 3. 성공 시 "수정 성공! 출력 / 실패 시 "아이디 또는 비밀번호 불일치" 출력
 		
+		// 1) JDBC 객체 참조변수 선언 + 키보드 입력용 객체 sc선언
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		
 		Scanner sc = null;
 		
 		try {
+			// 2) Connection 객체 생성 (DriverManager를 통해서)
+			// 2-1) OracleDriver 메모리에 로드
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			
-			String type = "jdbc:oracle:thin:@"; // 드라이버의 종류
-			String host = "localhost"; // DB 서버 컴퓨터의 IP 또는 도메인주소 (localhost == 현재 컴퓨터)
-			String port = ":1521"; // 프로그램 연결을 위한 port 번호
-			String dbName = ":XE"; // DBSM 이름 (XE == eXpress Edition)
+			// 2-2) DB 연결정보 작성
+			String url = "jdbc:oracle:thin:@localhost:1521:XE";
 
 			String userName = "kh";		// 사용자 계정명
 			String password = "kh1234";	// 계정 비밀번호
 			
-			// 2-3. DB 연결 정보와 DriverManager를 이용해서 Connection 생성
-			conn = DriverManager.getConnection(type+host+port+dbName, userName, password);
+			// 2-3) DB 연결 정보와 DriverManager를 이용해서 Connection 생성
+			conn = DriverManager.getConnection(url, userName, password);
+			
+			// 3) SQL 작성 + AutoCommit 끄기
+			conn.setAutoCommit(false);
 			
 			sc = new Scanner(System.in);
 			
@@ -44,23 +48,47 @@ public class JDBCExample6 {
 			System.out.print("비밀번호 입력 : ");
 			String pw = sc.nextLine();
 			
-			System.out.print("이름 입력 : ");
+			System.out.print("수정할 이름 입력 : ");
 			String name = sc.nextLine();
 			
 			String sql = """
-					UPDATE TB_USER
-					SET USER_NAME = 
-					WHERE 
-					"""
+					UPDATE TB_USER SET 
+					USER_NAME = ?
+					WHERE USER_ID = ?
+					AND USER_PW = ? 
+					""";
 			
+			// 4) PreparedStatement 객체 생성
+			pstmt = conn.prepareStatement(sql);
 			
+			// 5) ? 에 알맞은 값 세팅
+			pstmt.setString(1, name);
+			pstmt.setString(2, id);
+			pstmt.setString(3, pw);
 			
+			// 6) SQL 수행 후 결과값 반환받기
+			// executeQuery() : SELECT 수행 후 ResultSet 반환
+			// executeUpdate() : DML 수행 후 결과 행의 개수 반환 (int)
+			int result = pstmt.executeUpdate();
+			
+			// 7. result 값에 따라 결과 처리 + commit / rollback
+			if(result > 0) {
+				System.out.println("수정 성공!");
+				conn.commit();
+				
+			} else {
+				System.out.println("아이디 또는 비밀번호 불일치");
+				conn.rollback();
+			}
 			
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			
 			try {
+				if(pstmt != null) pstmt.close();
+				if(conn != null) conn.close();
+				if(sc != null) sc.close();
 				
 			} catch (Exception e) {
 				e.printStackTrace();

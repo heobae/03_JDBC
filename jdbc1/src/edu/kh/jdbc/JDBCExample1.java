@@ -73,7 +73,7 @@ public class JDBCExample1 {
 			String userName = "kh";		// 사용자 계정명
 			String password = "kh1234";	// 계정 비밀번호
 			
-			// 2-3) DB연결 정보와 DriverManager를 이용해서 Connevtion 객체 생성
+			// 2-3) DB연결 정보와 DriverManager를 이용해서 Connection 객체 생성
 			conn = DriverManager.getConnection(type+host+port+dbName,
 												  userName, password);
 			
@@ -97,7 +97,7 @@ public class JDBCExample1 {
 			// Statement 객체를 생성해둠.
 			
 			/* 5. Statement 객체를 이용해서 SQL 수행 후 결과 반환 받기 */
-			// 1) ResultSet Statement.executeQuery(sql)
+			// 1) ResultSet Statement.executeQuery(sql);
 			//	 -> sql이 SELECT 문일 때 결과로 ResultSet 객체 반환
 			
 			// 2) int Statement.executeUpdate(sql);
@@ -122,7 +122,7 @@ public class JDBCExample1 {
 				
 				// [Java]				[DB]
 				// String			CHAR, VARCHAR2
-				// ing, long		NUMBER (정수만 저장된 컬럼)
+				// int, long		NUMBER (정수만 저장된 컬럼)
 				// float, double	NUMBER (정수 + 실수)
 				// java.sql.Date	DATE
 				String empId = rs.getString("EMP_ID");
@@ -145,7 +145,7 @@ public class JDBCExample1 {
 			e.printStackTrace();
 		} finally {
 			/* 7. 사용완료 된 JDBC 객체 자원 반환 (close) */
-			// -> 자원반환을 하지 않으면 DB와 연결된 Connection이 그래도 남아 있어서
+			// -> 자원반환을 하지 않으면 DB와 연결된 Connection이 그대로 남아 있어서
 			//	  다른 클라이언트가(ex. Java프로그램) 추가적으로 연결되지 못하는
 			//	  문제가 발생될 수 있다.
 			// -> DBMS는 최대 Connection 수 개수 제한을 하고 있기 때문에

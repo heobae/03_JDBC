@@ -15,7 +15,7 @@ public class JDBCExample5 {
 		 *   ? 자리에 java 값을 대입할 준비가 되어있는 Statement
 		 *   
 		 * 장점 1 : SQL 작성이 간단해짐
-		 * 장점 2 : ? 에 값 대입 시 자룡형에 맞는 형태의 리터럴로 대입됨!
+		 * 장점 2 : ? 에 값 대입 시 자료형에 맞는 형태의 리터럴로 대입됨!
 		 * 			ex) String 대입 -> '값' (자동으로 ''추가)
 		 * 			ex) int 대입	-> 값
 		 * 장점 3 : 성능, 속도에서 우위를 가지고 있음
@@ -99,7 +99,7 @@ public class JDBCExample5 {
 			int result = pstmt.executeUpdate();
 			
 			// 7. result 값에 따른 결과 + 트랜잭션 제어처리
-			if(result >0) { // INSERT 성공 시
+			if(result > 0) { // INSERT 성공 시
 				System.out.println(name + "님이 추가 되었습니다.");
 				conn.commit(); // COMMIT 수행 -> DB에 INSERT 영구 반영
 				
