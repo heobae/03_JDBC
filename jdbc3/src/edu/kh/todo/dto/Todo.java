@@ -12,5 +12,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class Todo {
-	
+	private int memberNo;
+	private int todoNo;
+	private String todoTitle;
+	private String todoDetails;
+	private String todoStatus;
+	private String todoDate;
 }
