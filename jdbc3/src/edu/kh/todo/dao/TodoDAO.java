@@ -28,7 +28,7 @@ public class TodoDAO {
 						INSERT INTO TB_MEMBER
 						VALUES(SEQ_MEMBER_NO.NEXTVAL, ?, ?, ?)
 						"""; // id, pw, name 부분만 위치홀더로 바꿔주기
-    * 메모리에 값을 계속 바꿔가면서 저장할 수 있는 공간
+   //  * 메모리에 값을 계속 바꿔가면서 저장할 수 있는 공간
 
 
 			

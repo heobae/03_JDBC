@@ -37,7 +37,7 @@ public class TodoView {
 				
 				switch(input) {
 				case 1: signUp(); break;
-				case 2:  break;
+				case 2: logIn(); break;
 				case 3:  break;
 				case 4:  break;
 				case 5:  break;
@@ -65,6 +65,7 @@ public class TodoView {
 		}while(input != 0);
 		
 	} // mainMenu() 종료
+
 
 	/** 1. 회원가입
 	 * @throws Exception 
@@ -102,11 +103,25 @@ public class TodoView {
 			System.out.println("회원가입 실패!");
 		}
 		
+	}
+	
+	/** 2. 로그인
+	 * 
+	 */
+	private void logIn() {
 		
+		System.out.print("=== 2. 로그인 ===\n");
 		
+		System.out.print("ID : ");
+		String memberId = sc.next();
+		
+		System.out.print("PW : ");
+		String memberPw = sc.next();
+		
+		Member member = new Member();
+		
+		 = service.logIn
 		
 	}
 	
-	
-
 }

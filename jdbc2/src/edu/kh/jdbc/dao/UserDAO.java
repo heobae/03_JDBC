@@ -46,7 +46,7 @@ public class UserDAO {
 			// 2. SQL 작성
 			String sql = "SELECT * FROM TB_USER WHERE USER_ID =?";
 			
-			// 3. PreparedStatenebt 객체 생성
+			// 3. PreparedStatement 객체 생성
 			pstmt = conn.prepareStatement(sql);
 			
 			// 4. ? (위치홀더) 에 알맞은 값 세팅
