@@ -12,8 +12,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class Member {
-	private int memberNo;
-	private String memberId;
-	private String memberPw;
-	private String memberName;
+private int memberNo;
+private String memberId;
+private String memberPw;
+private String memberName;
 }

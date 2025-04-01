@@ -121,6 +121,11 @@ public class TodoView {
 		Member member = new Member();
 		
 		 = service.logIn
+				 
+		/*		 1. 로그인
+				 - 로그인 하는 대상을 저장하는 객체
+				 - 로그인이 안되어 있어야 함, 객체가 널이면 로그인이 안돼있는거
+				 -   */ 
 		
 	}
 	
