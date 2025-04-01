@@ -17,14 +17,14 @@ import java.util.Properties;
 				Properties prop = new Properties();
 				
 				// driver.xml 파일을 읽기 위한 InputStream 객체 생성
-				FileInputStream fis = new FileInputStream("todo.xml");
+				FileInputStream fis = new FileInputStream("driver.xml");
 				
 				// 연결된 driver.xml 파일에 있는 내용을 모두 읽어와
 				// Properties 객체에 K:V 형식으로 저장
 				prop.loadFromXML(fis);
 				
 				// prop.getProperty("key") : key가 일치하는 속성값(value)을 얻어옴
-				String driver = prop.getProperty("todo");
+				String driver = prop.getProperty("driver");
 				String url = prop.getProperty("url");
 				String userName = prop.getProperty("userName");
 				String password = prop.getProperty("password");

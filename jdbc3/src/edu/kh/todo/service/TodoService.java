@@ -43,4 +43,19 @@ public class TodoService {
 		return result;
 	}
 
+	public Member logIn(String memberId, String memberPw) throws Exception {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		Member loginUser = dao.logIn(conn, memberId, memberPw);
+		
+		JDBCTemplate.close(conn);
+		
+		return loginUser;
+		
+		
+	}
+
+
+
 }

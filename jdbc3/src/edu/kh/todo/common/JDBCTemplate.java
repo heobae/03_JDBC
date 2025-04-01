@@ -53,12 +53,12 @@ public class JDBCTemplate {
 			Properties prop = new Properties();
 			
 			// 2. Properties가 제공하는 메서드를 이용해서 driver.xml 파일 내용을 읽어오기
-			String filePath = "todo.xml";
+			String filePath = "driver.xml";
 			
 			prop.loadFromXML(new FileInputStream(filePath));
 			
 			// 3. prop에 저장된 값을 이용해서 Connection 객체 생성
-			Class.forName(prop.getProperty("todo"));
+			Class.forName(prop.getProperty("driver"));
 			// Class.forName("oracle.jdbc.driver.OracleDriver");
 			
 			conn = DriverManager.getConnection(prop.getProperty("url"),
