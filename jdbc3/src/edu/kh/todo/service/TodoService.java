@@ -43,4 +43,14 @@ public class TodoService {
 		return result;
 	}
 
+	public void logIn(String memberId, String memberPw) {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		Member member = dao.logIn(conn, memberId, memberPw);
+		
+		
+	}
+	
+
 }

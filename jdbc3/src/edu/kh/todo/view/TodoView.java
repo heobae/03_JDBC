@@ -112,6 +112,11 @@ public class TodoView {
 		
 		System.out.print("=== 2. 로그인 ===\n");
 		
+		if(loginMember == null) {
+			System.out.println("로그인 중인 계정이 있습니다.");
+			return;
+		}
+		
 		System.out.print("ID : ");
 		String memberId = sc.next();
 		
@@ -120,7 +125,7 @@ public class TodoView {
 		
 		Member member = new Member();
 		
-		 = service.logIn
+		loginMember = service.logIn(memberId, memberPw);
 				 
 		/*		 1. 로그인
 				 - 로그인 하는 대상을 저장하는 객체
