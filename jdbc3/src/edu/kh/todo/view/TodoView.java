@@ -1,9 +1,12 @@
 package edu.kh.todo.view;
 
+import java.sql.SQLException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import edu.kh.todo.dto.Member;
+import edu.kh.todo.dto.Todo;
 import edu.kh.todo.service.TodoService;
 
 public class TodoView {
@@ -11,6 +14,7 @@ public class TodoView {
 	private Scanner sc = new Scanner(System.in);
 	private TodoService service = new TodoService();
 	private Member loginUser = null;
+	private Object memberNo;
 	
 	/** User 관리 프로그램 메인 메뉴
 	 */
@@ -27,7 +31,7 @@ public class TodoView {
 				System.out.println("3. 내 TODO 전체 조회 (번호, 제목, 완료여부, 작성일");
 				System.out.println("4. 새로운 TODO 추가");
 				System.out.println("5. TODO 수정 (제목, 내용)");
-				System.out.println("6. 완료여부변경 (Y <-> N");
+				System.out.println("6. 완료여부변경 (Y <-> N)");
 				System.out.println("7. TODO 삭제");
 				System.out.println("0. 로그아웃");
 				
@@ -39,8 +43,8 @@ public class TodoView {
 				switch(input) {
 				case 1: signUp(); break;
 				case 2: logIn(); break;
-				case 3:  break;
-				case 4:  break;
+				case 3: todoSelect(); break;
+				case 4: addTodo(); break;
 				case 5:  break;
 				case 6:  break;
 				case 7:  break;
@@ -108,7 +112,6 @@ public class TodoView {
 	
 	/** 2. 로그인
 	 * @throws Exception 
-	 * 
 	 */
 	private void logIn() throws Exception {
 		
@@ -141,4 +144,45 @@ public class TodoView {
 				 -   */ 
 	}
 	
+	/** 3. todo 전체조회
+	 * @throws SQLException 
+	 */
+	private void todoSelect() throws SQLException {
+		
+		System.out.println("=== 전체 todoList 조회 ===\n");
+		
+		if(loginUser == null) {
+			System.out.println("로그인 후 이용바랍니다.");
+			return;
+		}
+		int result = loginUser.getMemberNo();
+		
+		List<Todo> todoList = service.todoSelect(result);
+		
+		if(todoList.isEmpty()) {
+			System.out.println("\n***조회 결과가 없습니다 ***\n");
+			return;
+		}
+		System.out.println(loginUser.getMemberName()+" : ");
+		for(Todo todo : todoList) {
+			System.out.printf("%d. %s, 완료여부: %s, 작성일: %s ", todo.getTodoNo(), todo.getTodoTitle(), 
+					todo.getTodoStatus(), todo.getTodoDate());
+			
+		}
+		
+	}
+	
+	/** 4. todo 추가
+	 */
+	private void addTodo() {
+		
+		System.out.println("=== todoList 추가 ===\n");
+		
+		if(loginUser == null) {
+			System.out.println("로그인 후 이용바랍니다.");
+			return;
+		}
+	}
 }
+
+

@@ -1,10 +1,13 @@
 package edu.kh.todo.service;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 import edu.kh.todo.common.JDBCTemplate;
 import edu.kh.todo.dao.TodoDAO;
 import edu.kh.todo.dto.Member;
+import edu.kh.todo.dto.Todo;
 
 public class TodoService {
 
@@ -53,6 +56,19 @@ public class TodoService {
 		JDBCTemplate.close(conn);
 		
 		return loginUser;
+		
+	}
+
+
+	public List<Todo> todoSelect(int result) throws SQLException {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		List<Todo> todoList = dao.todoSelect(conn, result);
+		
+		JDBCTemplate.close(conn);
+		
+		return todoList;
 		
 	}
 

@@ -7,8 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.kh.todo.dto.Member;
+import edu.kh.todo.dto.Todo;
 
 public class TodoDAO {
 
@@ -85,5 +88,44 @@ public class TodoDAO {
 		}
 		return loginUser;
 	}
-	
+
+
+	public List<Todo> todoSelect(Connection conn, int result) throws SQLException {
+		
+		List<Todo> todoList = new ArrayList<Todo>();
+		
+		try {
+			String sql = """
+						SELECT MEMBER_NO, MEMBER_NAME, TODO_NO, TODO_TITLE, 
+						TODO_DETAILS, TODO_DATE
+						FROM TB_TODOLIST
+						JOIN TB_MEMBER USING (MEMBER_NO)
+						ORDER BY MEMBER_NO
+					    """;
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				int memberNo = rs.getInt("MEMBER_NO");
+				String memberName = rs.getString("MEMBER_NAME");
+				int todoNo = rs.getInt("TODO_NO");
+				String todoTitle = rs.getString("TODO_TITLE");
+				String todoDetails = rs.getString("TODO_DETAILS");
+				String todoStatus = rs.getString("TODO_STATUS");
+				String todoDate = rs.getString("TODO_DATE");
+				
+				Todo todo = new Todo(memberNo, todoNo, todoTitle, todoDetails, todoStatus, todoDate);
+				
+				todoList.add(todo);
+			}
+			
+		} finally {
+			close(rs);
+			close(pstmt);
+			
+		} return todoList;
+	}
+
 }
