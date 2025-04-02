@@ -10,6 +10,7 @@ public class TodoView {
 	
 	private Scanner sc = new Scanner(System.in);
 	private TodoService service = new TodoService();
+	private Member loginUser = null;
 	
 	/** User 관리 프로그램 메인 메뉴
 	 */
@@ -106,32 +107,38 @@ public class TodoView {
 	}
 	
 	/** 2. 로그인
+	 * @throws Exception 
 	 * 
 	 */
-	private void logIn() {
+	private void logIn() throws Exception {
 		
 		System.out.print("=== 2. 로그인 ===\n");
 		
-		if(loginMember == null) {
-			System.out.println("로그인 중인 계정이 있습니다.");
+		
+		if(loginUser != null) {
+			System.out.println("이미 로그인 중입니다.");
 			return;
 		}
-		
 		System.out.print("ID : ");
 		String memberId = sc.next();
 		
 		System.out.print("PW : ");
 		String memberPw = sc.next();
 		
-		Member member = new Member();
+		loginUser = service.logIn(memberId, memberPw);
 		
-		loginMember = service.logIn(memberId, memberPw);
+		if(loginUser==null) {
+			System.out.println("로그인에 실패하셨습니다.");
+			return;
+		}
+		
+		System.out.printf("%s님 환영합니다.",loginUser.getMemberName());
+		
 				 
 		/*		 1. 로그인
 				 - 로그인 하는 대상을 저장하는 객체
 				 - 로그인이 안되어 있어야 함, 객체가 널이면 로그인이 안돼있는거
 				 -   */ 
-		
 	}
 	
 }
