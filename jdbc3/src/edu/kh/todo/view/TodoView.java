@@ -45,9 +45,9 @@ public class TodoView {
 				case 2: logIn(); break;
 				case 3: todoSelect(); break;
 				case 4: addTodo(); break;
-				case 5:  break;
-				case 6:  break;
-				case 7:  break;
+				case 5: updateTodo(); break;
+				case 6: yesOrNo(); break;
+				case 7: deleteTodo(); break;
 				
 				case 0 : System.out.println("\n[프로그램 종료]\n"); break;
 				default: System.out.println("\n[메뉴 번호만 입력하세요]\n");
@@ -70,6 +70,7 @@ public class TodoView {
 		}while(input != 0);
 		
 	} // mainMenu() 종료
+
 
 
 	/** 1. 회원가입
@@ -165,7 +166,7 @@ public class TodoView {
 		}
 		System.out.println(loginUser.getMemberName()+" : ");
 		for(Todo todo : todoList) {
-			System.out.printf("%d. %s, 완료여부: %s, 작성일: %s ", todo.getTodoNo(), todo.getTodoTitle(), 
+			System.out.printf("%d. %s, 완료여부: %s, 작성일: %s\n", todo.getTodoNo(), todo.getTodoTitle(), 
 					todo.getTodoStatus(), todo.getTodoDate());
 			
 		}
@@ -173,16 +174,107 @@ public class TodoView {
 	}
 	
 	/** 4. todo 추가
+	 * @throws SQLException 
 	 */
-	private void addTodo() {
+	private void addTodo() throws SQLException {
 		
 		System.out.println("=== todoList 추가 ===\n");
+		
+		int memberno = loginUser.getMemberNo();
+		
+		if(loginUser == null) {
+			System.out.println("로그인 후 이용바랍니다.");
+			return;
+		}	
+			System.out.print("제목: ");
+			String todoTitle = sc.nextLine();
+			
+			System.out.print("내용: ");
+			String todoDetails = sc.nextLine();
+			
+			Todo todo = new Todo();
+			
+			todo.setTodoTitle(todoTitle);
+			todo.setTodoDetails(todoDetails);
+			
+			int result = service.addTodo(todo, memberno);
+			
+			if(result > 0) {
+				System.out.println("\n 할일이 등록되었습니다");
+			} else {
+				System.out.println("등록 실패!");
+			}
+			
+		
+	}
+	
+	/** 5. todo 수정
+	 * @throws SQLException 
+	 * 
+	 */
+	private void updateTodo() throws SQLException {
+
+		System.out.println(" === Todo 수정 ===\n");
+		
+		if(loginUser == null) {
+			System.out.println("로그인 후 이용바랍니다.");
+			return;
+		}	
+			System.out.print("수정할 할 일 번호 입력: ");
+			int todoNo = sc.nextInt();
+		
+			System.out.print("수정할 제목 입력: ");
+			String todoTitle = sc.next();
+			
+			System.out.print("수정할 내용 입력: ");
+			String todoDetails = sc.next();
+			
+			int result = service.updateTodo(todoNo, todoTitle, todoDetails, loginUser.getMemberNo());
+			
+			if(result > 0) {
+				System.out.println("수정 완료");
+			} else {
+				System.out.println("수정 실패!");
+			}
+			return;
+		
+	  }
+	
+	/** 6. 완료여부 변경
+	 * 
+	 */
+	private void yesOrNo() {
+		
+		
+		if(loginUser == null) {
+			return;
+		}
+		
+		int result = loginUser.getMemberNo();
+		
+		System.out.print("완료여부 변경할 할 일 번호 : ");
+		int todoNo = sc.nextInt();
+		
+		System.out.print("완료여부를 변경하시겠습니까? (Y <-> N) : ");
+		String status = sc.next().toUpperCase();
+		
+		}
+	
+	private void deleteTodo() {
 		
 		if(loginUser == null) {
 			System.out.println("로그인 후 이용바랍니다.");
 			return;
 		}
+		
+		int result = loginUser.getMemberNo();
+		
+		System.out.print("삭제할 할 일 번호 : ");
+		int todoNo = sc.nextInt();
+		
+		int result = service.deleteTodo(todoNo, loginUser.getMemberNo());
 	}
 }
+
 
 

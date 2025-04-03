@@ -47,6 +47,12 @@ public class TodoService {
 	}
 
 	
+	/** 2. 로그인
+	 * @param memberId
+	 * @param memberPw
+	 * @return
+	 * @throws Exception
+	 */
 	public Member logIn(String memberId, String memberPw) throws Exception {
 		
 		Connection conn = JDBCTemplate.getConnection();
@@ -60,6 +66,11 @@ public class TodoService {
 	}
 
 
+	/** 3. todo 전체조회
+	 * @param result
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<Todo> todoSelect(int result) throws SQLException {
 		
 		Connection conn = JDBCTemplate.getConnection();
@@ -69,6 +80,68 @@ public class TodoService {
 		JDBCTemplate.close(conn);
 		
 		return todoList;
+		
+	}
+
+
+	/** 4. todo 추가
+	 * @param todo
+	 * @param memberno 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int addTodo(Todo todo, int memberno) throws SQLException {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = dao.addtodo(conn, todo, memberno);
+		
+		if(result > 0) {
+			JDBCTemplate.commit(conn);
+		} else {
+			JDBCTemplate.rollback(conn);
+		}
+		
+		JDBCTemplate.close(conn);
+		
+		return result;
+	}
+
+
+	/** 5. todo 수정
+	 * @param todoTitle
+	 * @param todoDetails
+	 * @param memberNo
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int updateTodo(int todoNo, String todoTitle, String todoDetails, int memberNo) throws SQLException {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = dao.updateTodo(conn, todoNo, todoTitle, todoDetails, memberNo);
+		
+		if(result > 0) {
+			JDBCTemplate.commit(conn);
+		} else {
+			JDBCTemplate.rollback(conn);
+		}
+		return result;
+	}
+
+
+	/** 6. 완료여부 변경
+	 * @param todoStatus
+	 * @param todoNo
+	 * @param memberNo
+	 * @throws SQLException 
+	 */
+	public void yesOrNo(String todoStatus, int todoNo, int memberNo) throws SQLException {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		List<Todo> todoList = dao.yesOrNo(conn, todoStatus, todoNo, memberNo);
+		
 		
 	}
 

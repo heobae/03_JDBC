@@ -20,6 +20,12 @@ public class TodoDAO {
 	private ResultSet rs = null;
 	
 	
+	/** 1. 회원가입
+	 * @param conn
+	 * @param member
+	 * @return
+	 * @throws Exception
+	 */
 	public int signUp(Connection conn, Member member) throws Exception {
 		
 		// 1. 결과 저장용 변수 선언
@@ -57,6 +63,13 @@ public class TodoDAO {
 	}
 
 
+	/** 2. 로그인
+	 * @param conn
+	 * @param memberId
+	 * @param memberPw
+	 * @return
+	 * @throws Exception
+	 */
 	public Member logIn(Connection conn, String memberId, String memberPw) throws Exception {
 		Member loginUser = null;
 		
@@ -90,6 +103,12 @@ public class TodoDAO {
 	}
 
 
+	/** 3. todo 전체조회
+	 * @param conn
+	 * @param result
+	 * @return
+	 * @throws SQLException
+	 */
 	public List<Todo> todoSelect(Connection conn, int result) throws SQLException {
 		
 		List<Todo> todoList = new ArrayList<Todo>();
@@ -97,13 +116,16 @@ public class TodoDAO {
 		try {
 			String sql = """
 						SELECT MEMBER_NO, MEMBER_NAME, TODO_NO, TODO_TITLE, 
-						TODO_DETAILS, TODO_DATE
+						TODO_DETAILS, TODO_STATUS, TODO_DATE
 						FROM TB_TODOLIST
 						JOIN TB_MEMBER USING (MEMBER_NO)
+						WHERE MEMBER_NO = ?
 						ORDER BY MEMBER_NO
 					    """;
 			
 			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, result);
 			
 			rs = pstmt.executeQuery();
 			
@@ -127,5 +149,106 @@ public class TodoDAO {
 			
 		} return todoList;
 	}
+
+
+	/** 4. todo 추가
+	 * @param conn
+	 * @param todo
+	 * @param memberno 
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int addtodo(Connection conn, Todo todo, int memberno) throws SQLException {
+		
+		int result = 0;
+		
+		try {
+			String sql = """
+					     INSERT INTO TB_TODOLIST
+					     VALUES(?, SEQ_TODO_NO.NEXTVAL,
+					     ?, ?, DEFAULT, DEFAULT)
+						""";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, memberno);
+			pstmt.setString(2, todo.getTodoTitle());
+			pstmt.setString(3, todo.getTodoDetails());
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close(pstmt);
+			close(rs);
+		}
+		return result;
+	}
+
+
+	/** 5. todo 수정
+	 * @param conn
+	 * @param todoTitle
+	 * @param todoDetails
+	 * @param memberNo
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int updateTodo(Connection conn, int todoNo, String todoTitle, String todoDetails, int memberNo) throws SQLException {
+		
+		int result = 0;
+		
+		try {
+			String sql = """
+						 UPDATE TB_TODOLIST
+						 SET TODO_TITLE = ?, TODO_DETAILS = ?
+						 WHERE MEMBER_NO = ?
+						 AND TODO_NO = ?
+					     """;
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			
+			pstmt.setString(1, todoTitle);
+			pstmt.setString(2, todoDetails);
+			pstmt.setInt(3, memberNo);
+			pstmt.setInt(4, todoNo);
+			
+			result = pstmt.executeUpdate();
+			
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+
+
+	public List<Todo> yesOrNo(Connection conn, String todoStatus, int todoNo, int memberNo) throws SQLException {
+		
+		List<Todo> todoList = new ArrayList<Todo>();
+		
+		try {
+			String sql = """
+						 UPDATE TB_TODOLIST
+						 SET TODO_STATUS = ?
+						 WHERE MEMBER_NO = ?
+						 AND TODO_NO = ?
+						""";
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, todoStatus);
+			pstmt.setInt(2, memberNo);
+			pstmt.setInt(3, todoNo);
+			
+			int result = pstmt.executeUpdate();
+		
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		return todoList;
+	}
+
+
 
 }
