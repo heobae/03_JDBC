@@ -45,6 +45,19 @@ public class TodoService {
 		// 6. 결과 반환
 		return result;
 	}
+	
+	/** 1-2. id 중복확인
+	 * @param memberId
+	 * @return
+	 * @throws SQLException
+	 */
+	public boolean isIdDuplicated(String memberId) throws SQLException {
+		
+		Connection conn = JDBCTemplate.getConnection();
+	    return dao.isIdDuplicated(conn, memberId);
+	    
+	    
+	}
 
 	
 	/** 2. 로그인
@@ -129,21 +142,46 @@ public class TodoService {
 		return result;
 	}
 
-
-	/** 6. 완료여부 변경
-	 * @param todoStatus
+	/** 6. 완료 여부 변경
 	 * @param todoNo
+	 * @param todoStatus
 	 * @param memberNo
-	 * @throws SQLException 
+	 * @return
+	 * @throws SQLException
 	 */
-	public void yesOrNo(String todoStatus, int todoNo, int memberNo) throws SQLException {
+	public int complete(int todoNo, String todoStatus, int memberNo) throws SQLException {
 		
 		Connection conn = JDBCTemplate.getConnection();
 		
-		List<Todo> todoList = dao.yesOrNo(conn, todoStatus, todoNo, memberNo);
+		int result = dao.complete(conn, todoStatus, todoNo, memberNo);
 		
-		
+		if(result > 0) {
+			JDBCTemplate.commit(conn);
+		} else {
+			JDBCTemplate.rollback(conn);
+		} return result;
 	}
+
+	/** 7. todo 삭제
+	 * @param todoNo
+	 * @param memberNo
+	 * @return
+	 * @throws SQLException 
+	 */
+	public int deleteTodo(int todoNo, int memberNo) throws SQLException {
+		
+		Connection conn = JDBCTemplate.getConnection();
+		
+		int result = dao.deleteTodo(conn, todoNo, memberNo);
+		
+		if(result > 0) {
+			JDBCTemplate.commit(conn);
+		} else {
+			JDBCTemplate.rollback(conn);
+		} return result;
+	}
+
+
 
 
 }

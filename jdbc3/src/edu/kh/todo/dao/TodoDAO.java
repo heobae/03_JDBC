@@ -61,7 +61,35 @@ public class TodoDAO {
 		
 		return result;
 	}
-
+	
+		
+	/** 1-2. id 중복확인
+	* @param conn
+	* @param memberId
+	* @return
+	 * @throws SQLException 
+	*/
+	public boolean isIdDuplicated(Connection conn, String memberId) throws SQLException {
+			
+		try {
+			String sql = "SELECT * FROM TB_MEMBER WHERE MEMBER_ID = ?";
+				
+			pstmt = conn.prepareStatement(sql);
+				
+			pstmt.setString(1, memberId);
+			rs = pstmt.executeQuery();
+				
+			if(rs.next()) {
+				return rs.getInt(1) > 0;
+			}
+			
+				
+			} finally {
+				close(rs);
+				close(pstmt);
+				
+			} return false;
+		}
 
 	/** 2. 로그인
 	 * @param conn
@@ -220,34 +248,80 @@ public class TodoDAO {
 		}
 		return result;
 	}
-
-
-	public List<Todo> yesOrNo(Connection conn, String todoStatus, int todoNo, int memberNo) throws SQLException {
+	
+	/** 6. 완료 여부 변경
+	 * @param conn
+	 * @param todoStatus
+	 * @param todoNo
+	 * @param memberNo
+	 * @return
+	 * @throws SQLException
+	 */
+	public int complete(Connection conn, String todoStatus, int todoNo, int memberNo) throws SQLException {
 		
-		List<Todo> todoList = new ArrayList<Todo>();
+		int result = 0;
+		
+	    if (!todoStatus.equals("Y")) {
+	        return 0; // 변경 안 함
+	    }
+	    
+	    try {
+
+	    String sql = "UPDATE TB_TODOLIST " +
+	                 "SET TODO_STATUS = CASE WHEN TODO_STATUS = 'Y' THEN 'N' ELSE 'Y' END " +
+	                 "WHERE TODO_NO = ? AND MEMBER_NO = ?";
+	    
+	    	pstmt = conn.prepareStatement(sql);
+
+	        pstmt.setInt(1, todoNo);
+	        pstmt.setInt(2, memberNo);
+	        return pstmt.executeUpdate();
+	    
+			
+		} finally {
+			close(pstmt);
+		} 
+	}
+
+	/** 7. todo 삭제
+	 * @param conn
+	 * @param todoNo
+	 * @param memberNo
+	 * @return
+	 * @throws SQLException
+	 */
+	public int deleteTodo(Connection conn, int todoNo, int memberNo) throws SQLException {
+		
+		int result = 0;
 		
 		try {
 			String sql = """
-						 UPDATE TB_TODOLIST
-						 SET TODO_STATUS = ?
-						 WHERE MEMBER_NO = ?
-						 AND TODO_NO = ?
+						DELETE FROM TB_TODOLIST
+						WHERE TODO_NO = ?
+						AND MEMBER_NO = ?
 						""";
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, todoStatus);
+			pstmt.setInt(1, todoNo);
 			pstmt.setInt(2, memberNo);
-			pstmt.setInt(3, todoNo);
 			
-			int result = pstmt.executeUpdate();
-		
+			result = pstmt.executeUpdate();
+			
 		} finally {
-			close(rs);
 			close(pstmt);
-		}
-		return todoList;
+			
+		} return result;
 	}
+
+
+
+
+
+
+
+
+
 
 
 

@@ -15,6 +15,7 @@ public class TodoView {
 	private TodoService service = new TodoService();
 	private Member loginUser = null;
 	private Object memberNo;
+	private String memberId;
 	
 	/** User 관리 프로그램 메인 메뉴
 	 */
@@ -28,12 +29,13 @@ public class TodoView {
 				System.out.println("\n===== User 관리 프로그램 =====\n");
 				System.out.println("1. 회원가입");
 				System.out.println("2. 로그인");
-				System.out.println("3. 내 TODO 전체 조회 (번호, 제목, 완료여부, 작성일");
+				System.out.println("3. 내 TODO 전체 조회 (번호, 제목, 완료여부, 작성일)");
 				System.out.println("4. 새로운 TODO 추가");
 				System.out.println("5. TODO 수정 (제목, 내용)");
 				System.out.println("6. 완료여부변경 (Y <-> N)");
 				System.out.println("7. TODO 삭제");
-				System.out.println("0. 로그아웃");
+				System.out.println("8. 로그아웃");
+				System.out.println("0. 프로그램 종료");
 				
 				
 				System.out.print("메뉴 선택 : ");
@@ -46,8 +48,9 @@ public class TodoView {
 				case 3: todoSelect(); break;
 				case 4: addTodo(); break;
 				case 5: updateTodo(); break;
-				case 6: yesOrNo(); break;
+				case 6: complete(); break;
 				case 7: deleteTodo(); break;
+				case 8: logOut(); break;
 				
 				case 0 : System.out.println("\n[프로그램 종료]\n"); break;
 				default: System.out.println("\n[메뉴 번호만 입력하세요]\n");
@@ -72,7 +75,6 @@ public class TodoView {
 	} // mainMenu() 종료
 
 
-
 	/** 1. 회원가입
 	 * @throws Exception 
 	 */
@@ -80,8 +82,23 @@ public class TodoView {
 		
 		System.out.print("=== 1. 회원가입 ===\n");
 		
-		System.out.print("ID : ");
-		String memberId = sc.next();
+		if(loginUser != null) {
+			System.out.println("로그아웃 후 이용해주세요");
+			return;
+		} 
+		
+
+	    // 중복 ID 입력 방지를 위한 루프
+	    while (true) {
+	        System.out.print("ID : ");
+	        memberId = sc.next();
+
+	        if (service.isIdDuplicated(memberId)) {
+	            System.out.println("이미 가입된 ID입니다. 다시 입력해주세요.\n");
+	        } else {
+	            break; // 중복이 아니면 루프 탈출
+	        }
+	    }
 		
 		System.out.print("PW : ");
 		String memberPw = sc.next();
@@ -166,8 +183,8 @@ public class TodoView {
 		}
 		System.out.println(loginUser.getMemberName()+" : ");
 		for(Todo todo : todoList) {
-			System.out.printf("%d. %s, 완료여부: %s, 작성일: %s\n", todo.getTodoNo(), todo.getTodoTitle(), 
-					todo.getTodoStatus(), todo.getTodoDate());
+			System.out.printf("%d. %s - %s, 완료여부: %s, 작성일: %s\n", todo.getTodoNo(), todo.getTodoTitle(), 
+					todo.getTodoDetails(), todo.getTodoStatus(), todo.getTodoDate());
 			
 		}
 		
@@ -220,8 +237,34 @@ public class TodoView {
 			System.out.println("로그인 후 이용바랍니다.");
 			return;
 		}	
-			System.out.print("수정할 할 일 번호 입력: ");
-			int todoNo = sc.nextInt();
+		List<Todo> todoList = service.todoSelect(loginUser.getMemberNo());
+		
+	    if (todoList.isEmpty()) {
+	        System.out.println("할 일이 없습니다.");
+	        return;
+	    }
+		
+	    int todoNo;
+	    Todo selectedTodo = null;
+
+	    // 유효한 todoNo가 입력될 때까지 반복
+	    while (true) {
+	        System.out.print("수정할 할 일 번호 : ");
+	        todoNo = sc.nextInt();
+
+	        for (Todo todo : todoList) {
+	            if (todo.getTodoNo() == todoNo) {
+	                selectedTodo = todo;
+	                break;
+	            }
+	        }
+
+	        if (selectedTodo != null) {
+	            break;
+	        } else {
+	            System.out.println("해당되지 않는 번호입니다. 다시 입력해주세요.");
+	        }
+	    }
 		
 			System.out.print("수정할 제목 입력: ");
 			String todoTitle = sc.next();
@@ -236,44 +279,143 @@ public class TodoView {
 			} else {
 				System.out.println("수정 실패!");
 			}
-			return;
+		}	
 		
-	  }
+	  
 	
-	/** 6. 완료여부 변경
+	/** 6. 완료 여부 변경
+	 * @throws SQLException 
 	 * 
 	 */
-	private void yesOrNo() {
-		
-		
-		if(loginUser == null) {
-			return;
-		}
-		
-		int result = loginUser.getMemberNo();
-		
-		System.out.print("완료여부 변경할 할 일 번호 : ");
-		int todoNo = sc.nextInt();
-		
-		System.out.print("완료여부를 변경하시겠습니까? (Y <-> N) : ");
-		String status = sc.next().toUpperCase();
-		
-		}
-	
-	private void deleteTodo() {
+	private void complete() throws SQLException {
+		System.out.println("=== 완료 여부 변경 ===\n");
 		
 		if(loginUser == null) {
 			System.out.println("로그인 후 이용바랍니다.");
 			return;
 		}
 		
+	    List<Todo> todoList = service.todoSelect(loginUser.getMemberNo());
+
+	    if (todoList == null || todoList.isEmpty()) {
+	        System.out.println("할 일이 없습니다.");
+	        return;
+	    }
+		
+	    int todoNo;
+	    Todo selectedTodo = null;
+
+	    while (true) {
+	        System.out.print("완료 여부 수정할 할 일 번호 : ");
+	        todoNo = sc.nextInt();
+
+	        // 입력한 todoNo가 존재하는지 확인
+	        for (Todo todo : todoList) {
+	            if (todo.getTodoNo() == todoNo) {
+	                selectedTodo = todo;
+	                break;
+	            }
+	        }
+
+	        if (selectedTodo != null) {
+	            break; // 유효한 번호면 반복 종료
+	        } else {
+	            System.out.println("해당되지 않는 번호입니다. 다시 입력해주세요.");
+	        }
+	    }
+		
+		System.out.print("완료 여부를 변경하시겠습니까? (Y/N) : ");
+		String todoStatus = sc.next().toUpperCase();
+		
+		if (!todoStatus.equals("Y") && !todoStatus.equals("N")) {
+	        System.out.println("잘못된 입력입니다. Y 또는 N만 입력해주세요.");
+	        return;
+	    }
+
+	    // 입력이 Y면 상태 변경, N이면 현재 상태 유지
+	    // DB에서 현재 상태를 바꾸지 않고 처리하기 위해 DAO에 로직이 있어야 함
+
+	    int result = service.complete(todoNo, todoStatus, loginUser.getMemberNo());
+
+	    if (result > 0) {
+	        System.out.println("변경 완료!");
+	    } else {
+	        System.out.println("변경 실패!");
+	    }
+	}
+
+	/** 7. todo 삭제
+	 * @throws SQLException
+	 */
+	private void deleteTodo() throws SQLException {
+		
+		System.out.println("\n===== todoList 삭제 =====\n");
+		
+		if(loginUser == null) {
+			System.out.println("로그인 후 이용바랍니다.");
+			return;
+		}
+		
+		List<Todo> todoList = service.todoSelect(loginUser.getMemberNo());
+
+	    if (todoList == null || todoList.isEmpty()) {
+	        System.out.println("할 일이 없습니다.");
+	        return;
+	    }
+		
 		int result = loginUser.getMemberNo();
 		
-		System.out.print("삭제할 할 일 번호 : ");
-		int todoNo = sc.nextInt();
+		int todoNo;
+	    Todo selectedTodo = null;
+
+	    // 유효한 todoNo 입력될 때까지 반복
+	    while (true) {
+	        System.out.print("삭제할 할 일 번호 : ");
+	        todoNo = sc.nextInt();
+
+	        for (Todo todo : todoList) {
+	            if (todo.getTodoNo() == todoNo) {
+	                selectedTodo = todo;
+	                break;
+	            }
+	        }
+
+	        if (selectedTodo != null) {
+	            break;
+	        } else {
+	            System.out.println("해당되지 않는 번호입니다. 다시 입력해주세요.");
+	        }
+	    }
 		
-		int result = service.deleteTodo(todoNo, loginUser.getMemberNo());
+		 System.out.print("정말 삭제하시겠습니까? (Y/N) : ");
+		    String confirm = sc.next().toUpperCase();
+
+		    if (confirm.equals("Y")) {
+		    	
+		    	result = service.deleteTodo(todoNo, loginUser.getMemberNo());
+
+		        if (result > 0) {
+		            System.out.println("삭제 완료!");
+		        } else {
+		            System.out.println("삭제 실패!");
+		        }
+		    } else {
+		        System.out.println("삭제 취소되었습니다.");
+		    }
 	}
+	
+	/** 8. 로그아웃
+	 * 
+	 */
+	private void logOut() {
+		
+		if(loginUser == null) {
+			System.out.println("로그인 상태가 아닙니다.");
+		} else {
+			loginUser = null;
+			System.out.println("로그아웃 되었습니다.");
+		}
+	}	
 }
 
 
