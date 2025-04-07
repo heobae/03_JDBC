@@ -356,6 +356,8 @@ public class TodoView {
 			return;
 		}
 		
+		todoSelect();
+		
 		List<Todo> todoList = service.todoSelect(loginUser.getMemberNo());
 
 	    if (todoList == null || todoList.isEmpty()) {
